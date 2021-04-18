@@ -1,0 +1,53 @@
+*** Simulazione convertitore DC-DC di tipo forward ***
+*#destroy all
+*#run
+*#plot Vs1 NT2 Vl1#branch
+*#plot Vl1#branch
+
+VRAIL Vrail 0 DC 373
+VS1 Vs1 0 DC 0 PULSE 0 15 2e-6 2e-6 2e-6 10e-6 20e-6
+VS2 Vs2 0 DC 0 PULSE 0 15 2e-6 2e-6 2e-6 10e-6 20e-6
+Vl1 NS1 NRT2 DC 0.0 $ <-- Misura della corrente in ingresso sul primario
+Vd1 ND1 Vout DC 0.0 $ <-- Misura della corrente in uscita del diodo 1
+Vd2 ND2 Vout DC 0.0 $ <-- Misura della corrente in uscita del diodo 2
+Vo  No NT3 DC 0.0 $ <-- Misura della corrente in uscita totale
+Vd3 ND3 Vrail DC 0.0 $ <-- Misura della corrente sul diodo di ricircolo 3
+Vd4 ND4 NS1 DC 0.0 $ <-- Misura della corrente sul diodo di ricircolo 4
+
+S1 Vrail NS1 Vs1 0 igbtswitchmodel OFF 
+S2 NT1 0 Vs2 0 igbtswitchmodel OFF
+
+.model igbtswitchmodel sw vt=5 vh=1 ron=0.2 roff=40MEG
+
+D1 NRT4 ND1 diodemodel
+D2 NT3 ND2 diodemodel
+D3 NT1 ND3 diodemodel
+D4 0 ND4 diodemodel
+
+.model diodemodel D
+
+*L1 NT1 NT2 1.8e-3
+*L2 NT3 NT4 210e-6
+L1 NT1 NT2 6.47e-3
+L2 NT3 NT4 735e-6
+
+K1 L1 L2 0.998 $ <-- Coefficiente di accoppiamento delle induttanze mutue
+
+ROUT Vout No 10k
+RGND NT3 0 1T
+RT2 NRT2 NT2 20m 
+RT4 NRT4 NT4 20m
+RTP2 NRT4 NRT5 10 $ <-- resistenza in parallelo al secondario e in serie al condensatore CTP2
+
+CGND1 NT1 0 100p $ <-- Capacita` parassita della giunzione trasformatore primario a massa
+CGND2 NT2 0 100p
+CGND3 NT3 0 300p $ <-- Capacita` parassita della giunzione trasformatore secondario a massa
+CGND4 NT4 0 300p
+CTP2 NRT5 NT3 1.5n $ <-- Capacita` in serie a RTP2 per far insieme ad L2 un risuonatore LRC
+CELE Vrail 0 1m $ <-- Modellamento di tutti i condensatori elettrolitici presenti sulla rail
+
+.tran 10ns 21us 
+.control
+*wrdata results_forward_0001.txt Vs1 NT2 Vl1#branch Vd4#branch
+.endc
+.end

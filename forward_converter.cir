@@ -2,11 +2,11 @@
 *#destroy all
 *#run
 *#plot Vs1 NT2 Vl1#branch
-*#plot Vl1#branch
+*#plot Vs1 Vl1#branch
 
 VRAIL Vrail 0 DC 373
-VS1 Vs1 0 DC 0 PULSE 0 15 2e-6 2e-6 2e-6 10e-6 20e-6
-VS2 Vs2 0 DC 0 PULSE 0 15 2e-6 2e-6 2e-6 10e-6 20e-6
+VS1 Vs1 0 DC 0 PULSE 0 15 1e-6 1e-6 100e-9 8e-6 20e-6
+VS2 Vs2 0 DC 0 PULSE 0 15 1e-6 1e-6 100e-9 8e-6 20e-6
 Vl1 NS1 NRT2 DC 0.0 $ <-- Misura della corrente in ingresso sul primario
 Vd1 ND1 Vout DC 0.0 $ <-- Misura della corrente in uscita del diodo 1
 Vd2 ND2 Vout DC 0.0 $ <-- Misura della corrente in uscita del diodo 2
@@ -46,8 +46,8 @@ CGND4 NT4 0 300p
 CTP2 NRT5 NT3 1.5n $ <-- Capacita` in serie a RTP2 per far insieme ad L2 un risuonatore LRC
 CELE Vrail 0 1m $ <-- Modellamento di tutti i condensatori elettrolitici presenti sulla rail
 
-.tran 10ns 21us 
+.tran 100ns 100us 
 .control
-*wrdata results_forward_0001.txt Vs1 NT2 Vl1#branch Vd4#branch
+wrdata results_forward_0001.txt Vs1 NT2 Vl1#branch Vd4#branch
 .endc
 .end
